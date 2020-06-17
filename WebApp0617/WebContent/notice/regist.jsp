@@ -69,7 +69,10 @@
 		}
 	
 %>
-
+<script>
+	alert("등록성공");
+	location.href="/notice/list.jsp"; // 등록후 다시 list.jsp로 이동.
+</script>
 
 
 

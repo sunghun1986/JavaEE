@@ -43,9 +43,9 @@ textarea {
 <body>
 	<div>
 		<form>
-			<input type="text" placeholder="제목 입력" /> <input type="text"
-				placeholder="작성자 입력" />
-			<textarea placeholder="내용작성.."></textarea>
+			<input type="text" name="title" placeholder="제목 입력"/> 
+			<input type="text" name="writer"  placeholder="작성자 입력"/>
+			<textarea name="content" placeholder="내용작성.."></textarea>
 		</form>
 		<button id="bt_list">리스트</button>
 		<button id="bt_regist">등록</button>
