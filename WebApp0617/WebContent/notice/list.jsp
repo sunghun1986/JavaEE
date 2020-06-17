@@ -34,7 +34,7 @@ Class.forName("oracle.jdbc.driver.OracleDriver");
 		notice.setRegdate(rs.getString("regdata"));
 		notice.setHit(rs.getInt("hit"));
 		
-		list.add(notice);
+		list.add(notice);//추가
 	}
 	
 	
@@ -79,7 +79,7 @@ $(function(){
 		<%Notice notice=list.get(i);%>
 		<tr onMouseOver="this.style.background='cyan'" onMouseOut="this.style.vackground=''">
 			<td><%=total-- %></td>
-			<td><a href="/notice/content.jsp"><%=notice.getTitle() %><a></td>
+			<td><a href="/notice/content.jsp?notice_id=<%=notice.getNotice_id()%>"><%=notice.getTitle() %><a></td>
 			<td><%=notice.getWriter() %></td>
 			<td><%=notice.getRegdate().substring(0,10) %></td>
 			<td><%=notice.getHit() %></td>

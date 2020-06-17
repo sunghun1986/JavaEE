@@ -1,4 +1,48 @@
+<%@page import="com.dev.model.notice.Notice"%>
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.sql.PreparedStatement"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
+<%!
+String url="jdbc:oracle:thin:@localhost:1521:XE";
+String user="c##java";
+String pw="1234";
+
+Connection con;
+PreparedStatement pstmt;
+ResultSet rs;
+%>
+<%
+ 	int notice_id = 0;
+	//게시물의 pk를 클라이언트로부터 넘겨받자!!
+	notice_id=Integer.parseInt(request.getParameter("notice_id"));	
+	
+	Class.forName("oracle.jdbc.driver.OracleDriver");
+	con = DriverManager.getConnection(url,user,pw);
+	
+	//조회수 업데이트
+	String sql="update notice set hit = hit+1 where notice_id="+notice_id;
+	pstmt=con.prepareStatement(sql);
+	pstmt.executeUpdate();
+	
+	sql="select * from notice where notice_id="+notice_id;		
+	pstmt=con.prepareStatement(sql);
+	rs=pstmt.executeQuery();
+	
+	Notice notice = new Notice();
+	
+	if(rs.next()){
+		notice.setNotice_id(rs.getInt("notice_id"));
+		notice.setTitle(rs.getString("title"));
+		notice.setWriter(rs.getString("writer"));
+		notice.setContent(rs.getString("content"));
+		notice.setRegdate(rs.getString("regdata"));
+		notice.setHit(rs.getInt("hit"));
+		
+	}
+
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,11 +79,25 @@ textarea {
 			//새롭게 서버에게 요청을 시도하는것임.
 			$(location).attr("href","/notice/list.jsp");
 		});
+		$("#bt_del").click(function(){
+			if(confirm("삭제하시겠습니까?")){
+				del();
+			}
+		});
+		$("#bt_edit").click(function(){
+			if(confirm("수정하시겠습니까?")){
+				edit();
+			}
+		});
 	});
-	function regist() {
-		//웹서버의 서블릿(jsp)에게 오라클에 넣을것을 요청하자!
-		$("form").attr("method","post");//내용이 많다.
-		$("form").attr("action","/notice/regist.jsp");
+	function del() {
+		//alert("삭제요청시도");
+		location.href="/notice/delete.jsp?notice_id=<%=notice_id%>";
+	}
+	function edit(){
+		//수정을 담당하는 서블릿에게 요청!!
+		$("form").attr("method","post");//양이 많아서!
+		$("form").attr("action","/notice/edit.jsp");//
 		$("form").submit();
 	}
 </script>
@@ -47,16 +105,22 @@ textarea {
 <body bgcolor = "yellow">
 	<div>
 		<form>
-			<input type="text" name="title" placeholder="제목 입력"/> 
-			<input type="text" name="writer"  placeholder="작성자 입력"/>
-			<textarea name="content" placeholder="내용작성.."></textarea>
+			<input type="hidden" name="notice_id" value="<%=notice.getNotice_id()%>"/> 
+			<input type="text" name="title" value="<%=notice.getTitle()%>"/> 
+			<input type="text" name="writer" value="<%=notice.getWriter()%>"/>
+			<textarea name="content"><%=notice.getContent()%></textarea>
 		</form>
-		<button id="bt_list">뒤로</button>
-		<button id="bt_regist">등록</button>
+		<button id="bt_list">리스트</button>		
+		<button id="bt_edit">수정</button>
+		<button id="bt_del">삭제</button>
 	</div>
 </body>
 </html>
-
+<%
+	if(rs!=null){rs.close();}
+	if(pstmt!=null){pstmt.close();}
+	if(con!=null){con.close();}
+%>
 
 
 
