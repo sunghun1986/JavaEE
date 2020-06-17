@@ -1,10 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
 <%@page import="com.dev.model.notice.Notice"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.sql.DriverManager"%>
-<%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page import="java.sql.Connection"%>
 <%@ page import="java.sql.PreparedStatement"%>
 <%@ page import="java.sql.ResultSet"%>
+
 <%!
 String url="jdbc:oracle:thin:@localhost:1521:XE";
 String user="c##java";
@@ -15,6 +16,7 @@ ResultSet rs;
 %>
 <%
 //오라클 연동하기 select 문 수행~~
+Class.forName("oracle.jdbc.driver.OracleDriver");	
 	con = DriverManager.getConnection(url,user,pw);
 	String sql="select * from notice order by notice_id desc";
 	pstmt=con.prepareStatement(sql);
@@ -29,9 +31,10 @@ ResultSet rs;
 		notice.setTitle(rs.getString("title"));
 		notice.setWriter(rs.getString("writer"));
 		notice.setContent(rs.getString("content"));
-		notice.setRegdate(rs.getString("regdate"));
+		notice.setRegdate(rs.getString("regdata"));
 		notice.setHit(rs.getInt("hit"));
 		
+		list.add(notice);
 	}
 	
 	
@@ -47,6 +50,7 @@ button{
 	background:yellow;
 	color:red;
 }
+a{text-decoration:none}
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -68,17 +72,18 @@ $(function(){
 			<td width="10%">등록일</td>
 			<td width="10%">조회수</td>
 		</tr>
+		<%int total=list.size(); %>
 		<%
 			for (int i = 1; i <list.size(); i++) {
 		%>
-		<tr>
-			<td>26</td>
-			<td>마스크를 쓰고 수업받으세요</td>
-			<td>성헌이관리자</td>
-			<td>2020-06-17</td>
-			<td>31</td>
-		</tr>
-		
+		<%Notice notice=list.get(i);%>
+		<tr onMouseOver="this.style.background='cyan'" onMouseOut="this.style.vackground=''">
+			<td><%=total-- %></td>
+			<td><a href="/notice/content.jsp"><%=notice.getTitle() %><a></td>
+			<td><%=notice.getWriter() %></td>
+			<td><%=notice.getRegdate().substring(0,10) %></td>
+			<td><%=notice.getHit() %></td>
+		</tr>		
 		<%}%>
 		<tr>
 			<td colspan="5">
